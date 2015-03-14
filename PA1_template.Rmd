@@ -1,8 +1,8 @@
 ---
-title: "PA1_template"
-author: "Filip WÃ³jcik"
-date: "Saturday, March 07, 2015"
+title: "Reproducible Research: Peer Assessment 1"
 output: html_document
+author: "Filip Wójcik"
+date: "Saturday, March 07, 2015"
 ---
 
 ## Necessary configuration and preparation
@@ -80,7 +80,7 @@ group_data_by_interval <- function(data, aggregation_function=mean){
 ```
 
 
-## Part 1: Reading data
+## Loading and preprocessing the data
 
 First part of the assignment is reading data. I assume, that the data file is placed just next to this R script. It allows us use loading/processing functions without any additional efforts.
 
@@ -96,7 +96,7 @@ load_data <- function(){
 data <- load_data()
 ```
 
-## Part 2: What is mean total number of steps taken per day?
+## What is mean total number of steps taken per day?
 
 Getting the information from this part's question requires from us several steps:
 
@@ -109,7 +109,7 @@ This task can be achieved by the reusable function, that we have introduced earl
 mean_total_number_of_steps_per_day(data)
 ```
 
-## Part 3: What is the average daily activity pattern?
+## ## What is the average daily activity pattern?
 
 1. First part of answer will require to aggregate data by time interval. We can do this using the previously introduced function:
 
@@ -137,7 +137,7 @@ print(paste("Maximal interval is: ", max.interval))
 ```
 
 
-## Part 4: Imputing missing values
+## Imputing missing values
 
 ### Cleaning data
 
@@ -188,7 +188,7 @@ Right now, we can build the histogram of total number of steps taken each day us
 mean_total_number_of_steps_per_day(clean.data)
 ```
 
-### Part 5: Are there differences in activity patterns between weekdays and weekends?
+## Are there differences in activity patterns between weekdays and weekends?
 
 To compare daily acitvity patterns we do the follwing:
 1. Take the cleaned data
