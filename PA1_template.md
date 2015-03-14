@@ -1,24 +1,21 @@
----
-title: "Reproducible Research: Peer Assessment 1"
-output: 
-  html_document:
-    keep_md: TRUE
-author: "Filip Wójcik"
-date: "Saturday, March 07, 2015"
----
+# Reproducible Research: Peer Assessment 1
+Filip WÃ³jcik  
+Saturday, March 07, 2015  
 
 ## Necessary configuration and preparation
 
 First of all we need to require all necessary libraries
 
-```{r  Required libraries}
+
+```r
 library(ggplot2)
 library(grid)
 ```
 
 In order to prevent R from using default locale of the system, we need to force R to use english weekdays names
 
-```{r Locales change, results='hide'}
+
+```r
 Sys.setlocale("LC_TIME", "C")
 weekdays(Sys.Date()+0:6)
 ```
@@ -32,7 +29,8 @@ In this assignment, some portions of code can be used several times. E.g. groupi
 
 The following function will group data by day. By grouping we mean aggregation of number of steps, taken during all intervals in this day.
 
-```{r Aggregation by day}
+
+```r
 group_data_by_day <- function(data){
   clean.data <- na.omit(data)
   grouped.data <- aggregate(x = clean.data$steps, by = list(clean.data$date), FUN = sum)
@@ -46,7 +44,8 @@ group_data_by_day <- function(data){
 The following two functions take data, group it by day, and build histogram of it. We will reuse this function in two places - when calculating menan number of steps for the WHOLE data, and later - when calculating mean number of steps for the data with imputed values.
 Because functions will be reused - title is configurable.
 
-```{r Plotting mean number of steps per day}
+
+```r
 mean_total_number_of_steps_per_day <- function(data, title="Histogram of number of steps taken each day"){
   grouped.data <- group_data_by_day(data)
   plt <- plot_total_number_of_steps_per_day(grouped.data, title)
@@ -72,7 +71,8 @@ plot_total_number_of_steps_per_day <-function(grouped.data, title="Histogram of 
 The following function aggregates the steps count by the interval number. It takes all days, and extracts intervals from it, then groups them together and perform some operation on number of steps per interval. 
 Pay attention to the parameter: **aggregation_function** - it can be set to mean/median/mode/sum or whatever else we need. 
 
-``` {r Aggregate by interval}
+
+```r
 group_data_by_interval <- function(data, aggregation_function=mean){
   clean.data <- na.omit(data)
   grouped.data <- aggregate(x = clean.data$steps, by = list(clean.data$interval), FUN=aggregation_function)
@@ -88,7 +88,8 @@ First part of the assignment is reading data. I assume, that the data file is pl
 
 The following function reads data from file, and changes the "Date" column from character to date type: 
 
-``` {r Loadig and preprocessing data function}
+
+```r
 load_data <- function(){
   data <- read.csv("activity.csv", sep=",", header=TRUE)
   data$date <- as.Date(data$date, "%Y-%m-%d")
@@ -107,21 +108,31 @@ Getting the information from this part's question requires from us several steps
 
 This task can be achieved by the reusable function, that we have introduced earlier: **mean_total_number_of_steps_per_day**.
 
-```{r Build_histogram_of_mean_total_number_of_steps_taken_per_day, message=FALSE, echo=TRUE, fig.path='figures/'}
+
+```r
 mean_total_number_of_steps_per_day(data)
+```
+
+![](figures/Build_histogram_of_mean_total_number_of_steps_taken_per_day-1.png) 
+
+```
+## [1] "Mean of steps count:  10766.1886792453"
+## [1] "Median of steps count:  10765"
 ```
 
 ## ## What is the average daily activity pattern?
 
 1. First part of answer will require to aggregate data by time interval. We can do this using the previously introduced function:
 
-```{r Aggregation of data by interval}
+
+```r
 data.grouped.by.interval <- group_data_by_interval(data)
 ```
 
 2. Plot grouped data:
 
-```{r Plotting_aggregated_interval_vs_steps_count_data, fig.path='figures/'}
+
+```r
 qplot(
   x = data.grouped.by.interval$interval, 
   y=data.grouped.by.interval$steps.count, 
@@ -131,11 +142,18 @@ ylab("Steps count") +
 ggtitle("Average steps count per interval")
 ```
 
+![](figures/Plotting_aggregated_interval_vs_steps_count_data-1.png) 
+
 3. Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?
 
-```{r Finding 5 minute interval with maximal number of steps per day}
+
+```r
 max.interval <- data.grouped.by.interval$interval[which.max(data.grouped.by.interval$steps.count)]
 print(paste("Maximal interval is: ", max.interval))
+```
+
+```
+## [1] "Maximal interval is:  835"
 ```
 
 
@@ -153,7 +171,8 @@ The following function performs imputing missing steps values on selected rows f
 3. Take data with missing values: for each interval - take value from the data in pont 1) and use it to fil missing value
 4. Merge data together - data originally containing steps values, and data with filled steps values
 
-```{r Filling missing values function}
+
+```r
 clean_data <- function(data){
   are.steps.na <- is.na(data$steps)
   mean.steps.by.interval <- group_data_by_interval(data, aggregation_function = median)
@@ -178,7 +197,8 @@ clean_data <- function(data){
 
 Using the function defined above, we can build the clean data set:
 
-```{r Building clean data set}
+
+```r
 clean.data <- clean_data(data)
 ```
 
@@ -186,8 +206,16 @@ clean.data <- clean_data(data)
 
 Right now, we can build the histogram of total number of steps taken each day using the cleaned data. We will do this, using exactly the same functions as we used before
 
-```{r Histogram_of_average_number_of_steps_taken_each_day_using_clean_data, message=FALSE, fig.path='figures/'}
+
+```r
 mean_total_number_of_steps_per_day(clean.data)
+```
+
+![](figures/Histogram_of_average_number_of_steps_taken_each_day_using_clean_data-1.png) 
+
+```
+## [1] "Mean of steps count:  9503.86885245902"
+## [1] "Median of steps count:  10395"
 ```
 
 ## Are there differences in activity patterns between weekdays and weekends?
@@ -195,7 +223,8 @@ mean_total_number_of_steps_per_day(clean.data)
 To compare daily acitvity patterns we do the follwing:
 1. Take the cleaned data
 2. Add information about the day of week data using the following function
-```{r Adding day of week data}
+
+```r
 add_day_of_week_data <- function(data){
   within(
     data=data,
@@ -211,7 +240,8 @@ add_day_of_week_data <- function(data){
 3. Group data from both categories (weekday/weekend) by the interval
 4. Plot the panel
 
-```{r Comparing_weekday_and_weekend_activity_patterns,message=FALSE, fig.path='figures/'}
+
+```r
   week.data <- add_day_of_week_data(data)
   is.weekend <- (week.data$weekend == TRUE)
   weekend.intervals.grouped <- group_data_by_interval(week.data[is.weekend,])
@@ -228,3 +258,5 @@ add_day_of_week_data <- function(data){
     ylab("Steps count") + 
     ggtitle("Comparison of weekday and weekend time-series intervals")
 ```
+
+![](figures/Comparing_weekday_and_weekend_activity_patterns-1.png) 
