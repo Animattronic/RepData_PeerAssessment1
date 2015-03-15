@@ -120,7 +120,7 @@ mean_total_number_of_steps_per_day(data)
 ## [1] "Median of steps count:  10765"
 ```
 
-## ## What is the average daily activity pattern?
+## What is the average daily activity pattern?
 
 1. First part of answer will require to aggregate data by time interval. We can do this using the previously introduced function:
 
